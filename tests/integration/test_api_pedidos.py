@@ -12,8 +12,37 @@ def test_health_check_retorna_200():
     assert resp.json() == {"status": "ok"}
 
 
-# TODO (Prática 2):
-# 1. Testar POST /pedidos com valor >= 100 e distância > 0 (status 201 e total_final calculado)
-# 2. Testar POST /pedidos com valor negativo (status 400 e mensagem de erro)
-# 3. Testar POST /pedidos com item vazio (status 400)
-# 4. Testar GET /pedidos verificando se o pedido criado aparece na lista
+def test_criar_pedido_retorna_201_e_total_final():
+    pedido = {"item": "Teclado", "valor": 150.0, "distancia_km": 10}
+
+    resp = client.post("/pedidos", json=pedido)
+
+    assert resp.status_code == 201
+    assert resp.json()["total_final"] == 160.0
+
+
+def test_criar_pedido_valor_negativo_retorna_400():
+    pedido = {"item": "Mouse", "valor": -10.0, "distancia_km": 5}
+
+    resp = client.post("/pedidos", json=pedido)
+
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Valor não pode ser negativo"
+
+
+def test_criar_pedido_item_vazio_retorna_400():
+    pedido = {"item": "", "valor": 50.0, "distancia_km": 5}
+
+    resp = client.post("/pedidos", json=pedido)
+
+    assert resp.status_code == 400
+
+
+def test_listar_pedidos_mostra_pedido_criado():
+    pedido = {"item": "Monitor", "valor": 80.0, "distancia_km": 2}
+    criado = client.post("/pedidos", json=pedido).json()
+
+    resp = client.get("/pedidos")
+
+    assert resp.status_code == 200
+    assert criado in resp.json()
