@@ -3,7 +3,7 @@ def calcular_desconto(valor: float) -> float:
     if valor < 0:
         raise ValueError("Valor não pode ser negativo")
     if valor >= 100:
-        return round(valor * 0.8, 2)
+        return round(valor * 0.9, 2)
     return round(valor, 2)
 
 
